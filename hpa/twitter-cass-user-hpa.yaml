@@ -1,0 +1,29 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  creationTimestamp: "2018-12-26T04:28:33Z"
+  name: twitter-cass-user
+  namespace: default
+  resourceVersion: "25993976"
+  selfLink: /apis/autoscaling/v2beta1/namespaces/default/horizontalpodautoscalers/twitter-cass-user
+  uid: b4884512-08c6-11e9-94e9-0a58ac1f1bd5
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  metrics:
+#  - resource:
+#      name: cpu
+#      targetAverageUtilization: 75
+#    type: Resource
+  - type: Object
+    object:
+      target:
+        kind: Service
+        name: twitter-cass-user
+      metricName: average-response-time
+      targetValue: 300m
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: twitter-cass-user
+
