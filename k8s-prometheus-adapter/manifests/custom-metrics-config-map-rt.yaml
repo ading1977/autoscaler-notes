@@ -1,0 +1,29 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    config.yaml: |
+      rules:
+      - seriesQuery: 'istio_turbo_service_latency_time_ms_sum{destination_service_name=~"twitter-cass-.*",response_code="200"}'
+        seriesFilters: []
+        resources:
+          overrides:
+            destination_service_name:
+              resource: service
+            destination_service_namespace:
+              resource: namespace
+        name:
+          as: "average-response-time"
+        metricsQuery: avg(rate(<<.Series>>{<<.LabelMatchers>>,response_code="200"}[3m])/rate(istio_turbo_service_latency_time_ms_count{response_code="200"}[3m])) by (<<.GroupBy>>)
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2018-12-28T22:52:04Z"
+    name: adapter-config
+    namespace: custom-metrics
+    resourceVersion: "26032347"
+    selfLink: /api/v1/namespaces/custom-metrics/configmaps/adapter-config
+    uid: 32590c6b-0af3-11e9-94e9-0a58ac1f1bd5
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
