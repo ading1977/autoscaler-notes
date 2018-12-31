@@ -88,7 +88,7 @@ CPU utilization based HPA can be enabled relatively easily
   kubectl autoscale deployment twitter-cass-tweet --max=10 --cpu-percent=75
   kubectl autoscale deployment twitter-cass-user --max=10 --cpu-percent=75
   ```
-## Configure custom metrics bassed HPA
+## Configure custom metrics based HPA
 Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metrics.k8s.io` API. It’s provided by “adapter” API servers provided by metrics solution vendors. The most popular opensource adapter API server solution for promethus is [`k8s-prometheus-adapter`](https://github.com/directxman12/k8s-prometheus-adapter). It acts as a delegation between kubernetes and prometheus. Queries made to the kubernetes `custom.metrics.k8s.io` API endpoints are directed to this adapter server, where metrics values are dynamically obtained from prometheus server.
 * Create `custom-metrics` namespace
   ```
