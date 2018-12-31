@@ -88,13 +88,99 @@ CPU utilization based HPA can be enabled relatively easily
   kubectl autoscale deployment twitter-cass-tweet --max=10 --cpu-percent=75
   kubectl autoscale deployment twitter-cass-user --max=10 --cpu-percent=75
   ```
- ## Configure custom metrics bassed HPA
- Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metrics.k8s.io` API. It’s provided by “adapter” API servers provided by metrics solution vendors. The most popular opensource adapter API server solution for promethus is [`k8s-prometheus-adapter`](https://github.com/directxman12/k8s-prometheus-adapter). It acts as a delegation between kubernetes and prometheus. Queries made to the kubernetes `custom.metrics.k8s.io` API endpoints are directed to this adapter server, where metrics values are dynamically obtained from prometheus server.
- 
- 
- 
- 
- 
+## Configure custom metrics bassed HPA
+Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metrics.k8s.io` API. It’s provided by “adapter” API servers provided by metrics solution vendors. The most popular opensource adapter API server solution for promethus is [`k8s-prometheus-adapter`](https://github.com/directxman12/k8s-prometheus-adapter). It acts as a delegation between kubernetes and prometheus. Queries made to the kubernetes `custom.metrics.k8s.io` API endpoints are directed to this adapter server, where metrics values are dynamically obtained from prometheus server.
+* Create `custom-metrics` namespace
+  ```
+  kubectl create namespace custom-metrics
+  ```
+* Deploy `k8s-promethues-adapter` without TLS enabled
+  ```
+  kubectl create -f k8s-promethues-adapter/manifests/
+  ```
+* Create hpa based on custom metrics:
+  ```
+  kubectl create -f hpa/
+  ```
+* View hpa in action
+  ```
+  meng@Mengs-MBP$ kubectl get hpa
+  NAME                 REFERENCE                       TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+  istio-pilot          Deployment/istio-pilot          <unknown>/80%   1         5         0          110d
+  twitter-cass-api     Deployment/twitter-cass-api     265m/300m       1         15        13         21h
+  twitter-cass-tweet   Deployment/twitter-cass-tweet   244m/300m       1         15        5          21h
+  twitter-cass-user    Deployment/twitter-cass-user    11m/300m        1         10        1          20h
+  ```
+* Note: Changes made to the original deployment yaml:
+  - Remove TLS
+  - Allow generation of certificates into /tmp directory
+  - Modify prometheus server URL
+  - Change log level to 6
+  ```
+  @@ -22,28 +22,23 @@ spec:
+           image: directxman12/k8s-prometheus-adapter-amd64
+           args:
+           - --secure-port=6443
+  -        - --tls-cert-file=/var/run/serving-cert/serving.crt
+  -        - --tls-private-key-file=/var/run/serving-cert/serving.key
+  +        - --cert-dir=/tmp/cert
+           - --logtostderr=true
+  -        - --prometheus-url=http://prometheus.prom.svc:9090/
+  +        - --prometheus-url=http://prometheus.istio-system.svc:9090/
+           - --metrics-relist-interval=1m
+  -        - --v=10
+  +        - --v=6
+           - --config=/etc/adapter/config.yaml
+           ports:
+           - containerPort: 6443
+  +        securityContext:
+  +          readOnlyRootFilesystem: true
+           volumeMounts:
+  -        - mountPath: /var/run/serving-cert
+  -          name: volume-serving-cert
+  -          readOnly: true
+           - mountPath: /etc/adapter/
+             name: config
+             readOnly: true
+           - mountPath: /tmp
+             name: tmp-vol
+         volumes:
+  -      - name: volume-serving-cert
+  -        secret:
+  -          secretName: cm-adapter-serving-certs
+         - name: config
+           configMap:
+             name: adapter-config
+   ```
+ * Note: The [`configuration`](./k8s-prometheus-adapter/manifests/custom-metrics-config-map-rt.yaml) to retrieve the average response time custom metrics.
+
+ * Note: Sample hpa configuration for [`twitter-cass-api`](./hpa/twitter-cass-api-hpa.yaml)
+   ```
+    apiVersion: autoscaling/v2beta1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      creationTimestamp: "2018-12-23T16:44:53Z"
+      name: twitter-cass-api
+      namespace: default
+      resourceVersion: "25993995"
+      selfLink: /apis/autoscaling/v2beta1/namespaces/default/horizontalpodautoscalers/twitter-cass-api
+      uid: 128b7be8-06d2-11e9-94c0-0a58ac1f1fb8
+    spec:
+      minReplicas: 1
+      maxReplicas: 10
+      metrics:
+      - type: Object
+        object:
+          target:
+            kind: Service
+            name: twitter-cass-api
+          metricName: average-response-time
+          targetValue: 300m
+      scaleTargetRef:
+        apiVersion: extensions/v1beta1
+        kind: Deployment
+        name: twitter-cass-api
+     ```
  
  
  
