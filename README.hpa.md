@@ -55,7 +55,7 @@ Run `kubectl -n istio-system edit configmap prometheus`
 ```
 
 ## Configure custom metrics to be collected by Envoy, Istio and Prometheus
-* Deploy the [`yaml file`](./metrics/ip.turbo.metric.yaml). Compared to the original [`yaml file`](ip.turbo.metric.yaml), this file adds a few dimensions to the metric which is needed for the `k8s-prometheus-adapter` label matching rule to work for custom metrics.
+* Deploy the [`yaml file`](./metrics/ip.turbo.metric.yaml). Compared with the original [`yaml file`](https://github.com/turbonomic/demoapp/blob/master/deploy/metrics/ip.turbo.metric.yaml), this file adds a few dimensions to the metric which is needed for the `k8s-prometheus-adapter` label matching rule to work for custom metrics.
 
   **turbopodlatency**
   ```
