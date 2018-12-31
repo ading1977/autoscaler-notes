@@ -98,6 +98,44 @@ Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metri
   ```
   kubectl create -f k8s-promethues-adapter/manifests/
   ```
+  
+  Verify the custom resources are registered:
+  ```
+  meng@Mengs-MBP$ kubectl get --raw '/apis/custom.metrics.k8s.io/v1beta1' | jq .
+  {
+    "kind": "APIResourceList",
+    "apiVersion": "v1",
+    "groupVersion": "custom.metrics.k8s.io/v1beta1",
+    "resources": [
+      {
+        "name": "namespaces/average-response-time",
+        "singularName": "",
+        "namespaced": false,
+        "kind": "MetricValueList",
+        "verbs": [
+          "get"
+        ]
+      },
+      {
+        "name": "services/average-response-time",
+        "singularName": "",
+        "namespaced": true,
+        "kind": "MetricValueList",
+        "verbs": [
+          "get"
+        ]
+      }
+    ]
+  }
+  ```
+  
+  You can retrieve the resource by doing:
+  ```
+  meng@Mengs-MBP$ kubectl get --raw '/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/service/twitter-cass-api/average-response-time' | jq .items[].value
+  "1236m"
+  ```
+  
+  
 * Create hpa based on custom metrics:
   ```
   kubectl create -f hpa/
@@ -111,7 +149,7 @@ Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metri
   twitter-cass-tweet   Deployment/twitter-cass-tweet   244m/300m       1         15        5          21h
   twitter-cass-user    Deployment/twitter-cass-user    11m/300m        1         10        1          20h
   ```
-* Note: Changes made to the original deployment yaml:
+* Reference: Changes made to the original deployment yaml:
   - Remove TLS
   - Allow generation of certificates into /tmp directory
   - Modify prometheus server URL
@@ -152,9 +190,9 @@ Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metri
            configMap:
              name: adapter-config
    ```
- * Note: The [`configuration`](./k8s-prometheus-adapter/manifests/custom-metrics-config-map-rt.yaml) to retrieve the average response time custom metrics.
+ * Reference: The [`configuration`](./k8s-prometheus-adapter/manifests/custom-metrics-config-map-rt.yaml) to retrieve the average response time custom metrics.
 
- * Note: Sample hpa configuration for [`twitter-cass-api`](./hpa/twitter-cass-api-hpa.yaml)
+ * Reference: Sample hpa configuration for [`twitter-cass-api`](./hpa/twitter-cass-api-hpa.yaml)
    ```
     apiVersion: autoscaling/v2beta1
     kind: HorizontalPodAutoscaler
