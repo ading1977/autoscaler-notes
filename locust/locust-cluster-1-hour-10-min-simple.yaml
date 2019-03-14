@@ -1,30 +1,4 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: locust-master
-  labels:
-    name: locust
-    role: master
-spec:
-  type: NodePort
-  ports:
-    - port: 8089
-      targetPort: loc-master-web
-      protocol: TCP
-      name: loc-master-web
-    - port: 5557
-      targetPort: loc-master-p1
-      protocol: TCP
-      name: loc-master-p1
-    - port: 5558
-      targetPort: loc-master-p2
-      protocol: TCP
-      name: loc-master-p2
-  selector:
-    name: locust
-    role: master
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -50,11 +24,11 @@ spec:
             - name: TARGET_HOST
               # Replace the IP with the twitter app IP
               # e.g., value: "http://35.237.107.176:8699"
-              value: "http://40.76.50.131"
+              value: "http://a94f45c771b3511e9a4640e8e22e09e6-837229101.us-east-1.elb.amazonaws.com"
             - name: ENABLE_TIME_SLOT_PROBABILITY
               value: "1"
             - name: TIME_SLOT_PROBABILITY
-              value: "1.0,0.7,0.4,0.1,0.4,0.7"
+              value: "1.0,0.1"
             - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
               value: "10"
           ports:
@@ -76,7 +50,7 @@ metadata:
     name: locust
     role: worker
 spec:
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:
@@ -95,10 +69,10 @@ spec:
             - name: TARGET_HOST
               # Replace the IP with the twitter app IP
               # e.g., value: "http://35.237.107.176:8699"
-              value: "http://40.76.50.131"
+              value: "http://a94f45c771b3511e9a4640e8e22e09e6-837229101.us-east-1.elb.amazonaws.com"
             - name: ENABLE_TIME_SLOT_PROBABILITY
               value: "1"
             - name: TIME_SLOT_PROBABILITY
-              value: "1.0,0.7,0.4,0.1,0.4,0.7"
+              value: "1.0,0.1"
             - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
               value: "10"

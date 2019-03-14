@@ -29,6 +29,8 @@ spec:
               value: "1"
             - name: TIME_SLOT_PROBABILITY
               value: "1.0,0.1"
+            - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
+              value: "20"
           ports:
             - name: loc-master-web
               containerPort: 8089
@@ -72,3 +74,5 @@ spec:
               value: "1"
             - name: TIME_SLOT_PROBABILITY
               value: "1.0,0.1"
+            - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
+              value: "20"

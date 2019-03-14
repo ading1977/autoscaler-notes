@@ -28,7 +28,9 @@ spec:
             - name: ENABLE_TIME_SLOT_PROBABILITY
               value: "1"
             - name: TIME_SLOT_PROBABILITY
-              value: "1.0,0.1"
+              value: "0.1"
+            - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
+              value: "30"
           ports:
             - name: loc-master-web
               containerPort: 8089
@@ -48,7 +50,7 @@ metadata:
     name: locust
     role: worker
 spec:
-  replicas: 4
+  replicas: 1
   template:
     metadata:
       labels:
@@ -67,8 +69,11 @@ spec:
             - name: TARGET_HOST
               # Replace the IP with the twitter app IP
               # e.g., value: "http://35.237.107.176:8699"
+              # value: "http://40.76.50.131"
               value: "http://a94f45c771b3511e9a4640e8e22e09e6-837229101.us-east-1.elb.amazonaws.com"
             - name: ENABLE_TIME_SLOT_PROBABILITY
               value: "1"
             - name: TIME_SLOT_PROBABILITY
-              value: "1.0,0.1"
+              value: "0.1"
+            - name: TIME_SLOT_PROBABILITY_STEP_IN_MIN
+              value: "30"
