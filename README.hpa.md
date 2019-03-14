@@ -96,7 +96,7 @@ Kubernetes Horizontal Pod Autoscaler retrieves custom metrics from `custom.metri
   ```
 * Deploy `k8s-promethues-adapter` without TLS enabled
   ```
-  kubectl create -f k8s-promethues-adapter/manifests/
+  kubectl create -f k8s-prometheus-adapter/manifests/
   ```
   
   Verify the custom resources are registered:
